@@ -25,6 +25,8 @@ struct AttrExport: ParsableCommand {
   /// Extracts the specified extended attribute data set from a file and saves it to another file.
   mutating func run() throws {
     let fileManager = FileManager.default
+    let destExists = fileManager.fileExists(atPath: dstName)
+    let success = !destExists || (destExists && overwrite)
     
     // Check if the source file exists
     guard fileManager.fileExists(atPath: srcName) else {
@@ -32,7 +34,7 @@ struct AttrExport: ParsableCommand {
     }
     
     // Check if the destination file exists when overwrite is not allowed
-    guard !fileManager.fileExists(atPath: dstName) && !overwrite else {
+    guard success else {
       throw ValidationError("A file with the same destination name exists already")
     }
     
